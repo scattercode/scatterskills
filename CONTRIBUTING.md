@@ -84,8 +84,24 @@ Activate the hook in a fresh clone:
 git config core.hooksPath .githooks
 ```
 
-Version bumps follow the commit types — `fix` gives a patch, `feat` a minor,
-and `!` a major.
+## Versioning
+
+The version describes the library as a distributable, not any individual
+skill.
+
+| Bump | Trigger | Commit |
+|---|---|---|
+| **Major** | Removing or renaming a skill, or changing a skill's output contract so existing usage breaks | `feat!:` or a `BREAKING CHANGE:` footer |
+| **Minor** | Adding a new skill; adding a capability to an existing one | `feat:` |
+| **Patch** | Guidance corrections, typos, scaffolding, docs, installer fixes | `fix:`, `docs:`, `chore:`, `refactor:` |
+
+Adding a skill is deliberately *not* a major bump. People install individual
+skills, so `./install.sh some-skill` ends up in setup scripts — renaming or
+removing one breaks those, while adding one cannot break anything. Treating
+every addition as major would also drain the version number of meaning.
+
+A rename is a removal plus an addition. To avoid the major bump, leave a
+directory whose `SKILL.md` points at the new name.
 
 ## Changelog
 
