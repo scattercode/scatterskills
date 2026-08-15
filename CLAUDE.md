@@ -178,7 +178,7 @@ Format: `<type>[(scope)][!]: <description>`
 Use the skill name as the scope wherever a change is skill-specific:
 
 ```text
-feat(due-diligence-review): add AI governance domain
+feat(due-diligence-reviewer): add AI governance domain
 fix(install): support bash 3.2 on macOS
 docs: clarify project-scoped installation
 ```
@@ -202,7 +202,7 @@ that *adding* a skill is not a breaking change:
 | **Patch** | Corrections to guidance, typos, scaffolding, documentation, installer fixes | `fix:`, `docs:`, `chore:`, `build:`, `ci:`, `refactor:` |
 
 **Why removal and rename are the breaking cases, and addition is not.** People
-install individual skills — `./install.sh due-diligence-review` ends up in
+install individual skills — `./install.sh due-diligence-reviewer` ends up in
 setup scripts and dotfiles. Renaming or removing a skill breaks those; adding
 one cannot break anything. Treating every addition as a major bump would also
 drain the version number of meaning: a library reaching v12.0.0 because it
