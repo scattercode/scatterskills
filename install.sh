@@ -12,7 +12,7 @@
 #
 # How to run:
 #   ./install.sh                                  install all skills for all projects
-#   ./install.sh due-diligence-review             install one skill
+#   ./install.sh manuscript-copyeditor            install one skill
 #   ./install.sh --project /path/to/repo NAME     install into one project
 #   ./install.sh --copy NAME                      copy instead of symlinking
 #   ./install.sh --uninstall NAME                 remove an installed skill
@@ -22,6 +22,7 @@
 set -euo pipefail
 
 REPO_ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+SKILLS_DIR="$REPO_ROOT/skills"
 
 TARGET_BASE="${HOME}/.claude/skills"
 MODE="symlink"
@@ -53,12 +54,17 @@ Options:
 EOF
 }
 
-# `discover_skills` — a skill is any top-level directory containing SKILL.md.
-# Deriving the list from the filesystem means adding a skill needs no edit
-# here, which is one less thing to forget.
+# `discover_skills` — a skill is any directory under skills/ containing
+# SKILL.md. Deriving the list from the filesystem means adding a skill needs no
+# edit here, which is one less thing to forget.
+#
+# skills/ rather than the repository root because the Claude Code plugin
+# marketplace requires that layout when a plugin source resolves to the repo
+# root, and `npx skills` scans both — so this one arrangement serves every
+# distribution route.
 discover_skills() {
   local d
-  for d in "$REPO_ROOT"/*/; do
+  for d in "$SKILLS_DIR"/*/; do
     [ -f "${d}SKILL.md" ] || continue
     basename "$d"
   done
@@ -88,7 +94,7 @@ AVAILABLE=()
 while IFS= read -r line; do
   [ -n "$line" ] && AVAILABLE+=("$line")
 done < <(discover_skills)
-[ "${#AVAILABLE[@]}" -gt 0 ] || die "no skills found in $REPO_ROOT"
+[ "${#AVAILABLE[@]}" -gt 0 ] || die "no skills found in $SKILLS_DIR"
 
 if [ "$ACTION" = "list" ]; then
   log "Available in this repository:"
@@ -110,7 +116,7 @@ if [ "${#NAMES[@]}" -eq 0 ]; then
 fi
 
 for name in "${NAMES[@]}"; do
-  src="$REPO_ROOT/$name"
+  src="$SKILLS_DIR/$name"
   dst="$TARGET_BASE/$name"
 
   if [ "$ACTION" = "uninstall" ]; then

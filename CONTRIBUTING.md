@@ -24,12 +24,15 @@ following it would produce good work on a problem you did not anticipate.
 ## Structure
 
 ```text
-skill-name/
+skills/skill-name/
 ├── SKILL.md          required — frontmatter plus instructions
 ├── references/       optional — detail loaded on demand
 ├── scripts/          optional — executable helpers
 └── assets/           optional — templates, images used in output
 ```
+
+Skills live under `skills/` because the plugin marketplace requires that
+layout and `npx skills` accepts it — see CLAUDE.md.
 
 `SKILL.md` needs YAML frontmatter with `name` and `description`:
 
@@ -69,7 +72,7 @@ Types: `feat`, `fix`, `docs`, `style`, `refactor`, `perf`, `test`, `build`,
 `ci`, `chore`, `revert`. Use the skill name as the scope where it applies:
 
 ```text
-feat(due-diligence-review): add AI governance domain
+feat(due-diligence-reviewer): add AI governance domain
 fix(install): support bash 3.2 on macOS
 docs: clarify project-scoped installation
 ```
@@ -121,6 +124,7 @@ Test the install path before opening a pull request:
 ```bash
 ./install.sh --dry-run your-skill-name
 ./install.sh --list
+skills-ref validate ./skills/your-skill-name
 ```
 
 ## Testing a skill

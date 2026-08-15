@@ -1,5 +1,5 @@
 ---
-name: due-diligence-review
+name: due-diligence-reviewer
 description: Produce a rigorous, evidence-based due diligence review of a software product from the perspective of a reviewer at a regulated institution — bank, fund, insurer, energy, healthcare or government. Use this whenever the user asks whether a tool, vendor or library "would pass" a security review, wants a vendor or third-party risk assessment, mentions TPRM, supplier assurance, vendor onboarding, DORA, SOC 2, ISO 27001, CAIQ or SIG, asks what a client's security team would object to, wants to assess a product before putting it in front of a regulated client, or is evaluating software as a design partner or pilot customer. Also use it proactively when the user is evaluating a third-party tool and the deployment context is a regulated or enterprise environment, even if they do not use the words "due diligence".
 ---
 

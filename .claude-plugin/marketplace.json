@@ -1,0 +1,13 @@
+{
+  "name": "scatterskills",
+  "owner": {
+    "name": "Stephen Masters"
+  },
+  "plugins": [
+    {
+      "name": "scatterskills",
+      "source": "./",
+      "description": "Reusable agent skills: manuscript copy-editing and regulated-industry due diligence review"
+    }
+  ]
+}

@@ -1,0 +1,81 @@
+# Regenerate the changelog, tag, and publish a GitHub Release on push to main.
+#
+# scatterskills has a single unprotected `main`, so unlike scattercode.dev this
+# does both halves in one workflow: it commits CHANGELOG.md and creates the tag.
+# The guard below stops that commit from re-triggering the run.
+#
+# Versions follow the policy in CLAUDE.md: removing or renaming a skill is a
+# major bump, adding one is a minor, everything else is a patch. git-cliff
+# computes it from the commit types.
+name: Release
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: write
+
+concurrency:
+  group: release-main
+  cancel-in-progress: false
+
+jobs:
+  release:
+    # Skip the workflow's own changelog commit, or it would loop.
+    if: "!startsWith(github.event.head_commit.message, 'chore(release)')"
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out full history
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install git-cliff
+        uses: taiki-e/install-action@v2
+        with:
+          tool: git-cliff
+
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          next="$(git cliff --bumped-version)"
+          latest="$(git describe --tags --abbrev=0 2>/dev/null || echo '')"
+          if [ -z "$next" ] || [ "$next" = "$latest" ]; then
+            echo "No new version to release."
+            exit 0
+          fi
+          if git rev-parse "$next" >/dev/null 2>&1; then
+            echo "Tag $next already exists."
+            exit 0
+          fi
+
+          git cliff --bump --output CHANGELOG.md
+
+          # Marketplace users only receive updates when this version changes,
+          # so it has to track the tag rather than drift behind it.
+          python3 - "$next" <<'PY'
+          import json, pathlib, sys
+          p = pathlib.Path(".claude-plugin/plugin.json")
+          d = json.loads(p.read_text())
+          d["version"] = sys.argv[1].lstrip("v")
+          p.write_text(json.dumps(d, indent=2) + "\n")
+          PY
+
+          # Release notes = the new version's section only.
+          git cliff --bump --unreleased --strip all --output RELEASE_NOTES.md
+
+          git config user.name  "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add CHANGELOG.md .claude-plugin/plugin.json
+          git commit -m "chore(release): $next"
+          git push origin HEAD:main
+
+          git tag -a "$next" -m "$next"
+          git push origin "$next"
+
+          gh release create "$next" --title "$next" --notes-file RELEASE_NOTES.md
+          rm -f RELEASE_NOTES.md

@@ -1,5 +1,5 @@
 ---
-name: copyeditor
+name: manuscript-copyeditor
 description: Copy-edit book manuscripts and long-form prose, producing a self-contained HTML annotation report with colour-coded issue cards (TYPO, PUNCT, STYLE, CONSISTENCY, QUERY). Use when the user asks to copy-edit, proofread or review a book, chapter, manuscript or extracted Markdown file, or asks for writing quality to be reviewed and errors flagged. Applies Hart's Rules for British English or the Chicago Manual of Style for US English, with a dedicated pass for OCR artefacts when the text came from scanned pages. Trigger on any request to copy-edit or proofread a document — including when the user simply loads the skill and gives a file path.
 ---
 

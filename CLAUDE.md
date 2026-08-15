@@ -38,17 +38,45 @@ scatterskills/
 ├── cliff.toml             changelog generation config
 ├── install.sh             installs skills into a Claude skills directory
 ├── .githooks/commit-msg   Conventional Commits enforcement (shared)
-└── <skill-name>/
-    ├── SKILL.md           required — frontmatter plus instructions
-    ├── references/        optional — detail loaded on demand
-    ├── scripts/           optional — executable helpers
-    └── assets/            optional — templates used in output
+├── .github/workflows/     ci.yml (validation) and release.yml (tag + release)
+├── .claude-plugin/        marketplace.json and plugin.json — nothing else
+└── skills/
+    └── <skill-name>/
+        ├── SKILL.md       required — frontmatter plus instructions
+        ├── references/    optional — detail loaded on demand
+        ├── scripts/       optional — executable helpers
+        └── assets/        optional — templates used in output
 ```
 
-`install.sh` discovers skills from the filesystem: any top-level directory
-containing a `SKILL.md`. Adding a skill therefore needs no edit to the script
-— but it does need a row in the README catalogue, because that is where people
-look.
+**Skills live under `skills/`, and that path is load-bearing.** The Claude Code
+plugin marketplace requires `skills/<name>/SKILL.md` when a plugin source
+resolves to the repository root, and `npx skills` scans both the root and
+`skills/` — so this one arrangement serves every distribution route. Moving
+them back to the root would silently break the marketplace channel.
+
+`install.sh` discovers skills from the filesystem, so adding one needs no edit
+to the script — but it does need a row in the README catalogue, and CI fails
+if it is missing.
+
+## Distribution
+
+Three routes, all from the same layout:
+
+| Route | Command |
+|---|---|
+| skills CLI | `npx skills add scattercode/scatterskills` |
+| Plugin marketplace | `/plugin marketplace add scattercode/scatterskills` |
+| Local script | `./install.sh` |
+
+`.claude-plugin/plugin.json` carries a `version`, and marketplace users only
+receive updates when it changes — the release workflow bumps it to match each
+tag, so do not edit it by hand.
+
+Validate a skill against the spec before committing:
+
+```bash
+skills-ref validate ./skills/<skill-name>
+```
 
 ## Working on a skill
 
@@ -63,7 +91,31 @@ description: What it does, and when to use it.
 ---
 ```
 
-The directory name and `name` must match, both lower-case with hyphens.
+The directory name and `name` must match, both lower-case with hyphens. The
+spec requires it, and CI enforces it — when they diverge the skill loads under
+a name nobody expects, or not at all.
+
+### Naming convention
+
+**Name a skill for the role it plays** — an agent noun ending in `-er` or
+`-or`, qualified by domain where the bare noun would be too generic:
+`manuscript-copyeditor`, `due-diligence-reviewer`.
+
+This is a deliberate choice, not the documented default, so do not "correct"
+it. Anthropic's authoring guidance recommends the **gerund** form
+(`processing-pdfs`, `writing-documentation`). But their own library barely
+follows it: of the 18 skills in `anthropics/skills`, only two are gerunds,
+five are agent nouns (`skill-creator`, `mcp-builder`, `slack-gif-creator`,
+`web-artifacts-builder`, `theme-factory`) and the rest are plain domain nouns.
+There is no dominant convention to conform to.
+
+Agent nouns won here because they read naturally for skills that act on your
+behalf, and because they stay consistent across the library — the gerund form
+collapses on the second case, where `due-diligence-reviewing` is unusable.
+
+A generic name is also a practical hazard: the install name becomes the
+directory name in `~/.claude/skills/` with no collision suffixing, so a bare
+`copyeditor` would clash with anyone else's. Qualify by domain.
 
 **The description does more work than anything else in the file.** It is the
 only part always in Claude's context, and it alone determines whether the

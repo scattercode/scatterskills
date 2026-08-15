@@ -1,6 +1,6 @@
 # scatterskills
 
-A personal library of [Agent Skills](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview)
+A collaborative library of [Agent Skills](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview)
 for Claude — reusable procedures for work we do often enough that the approach
 is worth writing down.
 
@@ -24,53 +24,67 @@ and if a skill fits, it is used. You can also ask for one by name.
 
 | Skill | What it does |
 |---|---|
-| [`copyeditor`](copyeditor/) | Copy-edits book manuscripts and long-form prose, producing a self-contained HTML annotation report. Applies Hart's Rules or the Chicago Manual of Style depending on the target variety, with a dedicated pass for OCR artefacts in scanned text. Annotates rather than rewrites, so an editor decides what to accept |
-| [`due-diligence-review`](due-diligence-review/) | Produces an evidence-based due diligence review of a software product from the perspective of a reviewer at a regulated institution — bank, fund, insurer, energy, government. Use it to assess inbound software, or to give a vendor a friendly pre-review before a real one happens |
+| [`manuscript-copyeditor`](skills/manuscript-copyeditor/) | Copy-edits book manuscripts and long-form prose, producing a self-contained HTML annotation report. Applies Hart's Rules or the Chicago Manual of Style depending on the target variety, with a dedicated pass for OCR artefacts in scanned text. Annotates rather than rewrites, so an editor decides what to accept |
+| [`due-diligence-reviewer`](skills/due-diligence-reviewer/) | Produces an evidence-based due diligence review of a software product from the perspective of a reviewer at a regulated institution — bank, fund, insurer, energy, government. Use it to assess inbound software, or to give a vendor a friendly pre-review before a real one happens |
 
 ## Installing
 
-Skills live in `~/.claude/skills/` for personal use across all projects, or in
+Skills live in `~/.claude/skills/` for use across all your projects, or in
 `<project>/.claude/skills/` for one project.
 
-**Install everything, for all projects:**
+### With `npx skills` (recommended)
+
+The [skills CLI](https://github.com/vercel-labs/skills) installs straight from
+this repository — no clone needed, and it works with Claude Code, Cursor,
+Codex and many other agents.
+
+```bash
+npx skills add scattercode/scatterskills            # everything
+npx skills add scattercode/scatterskills --list     # preview first
+npx skills add scattercode/scatterskills --skill manuscript-copyeditor
+```
+
+Pin to a release if you would rather not track `main`:
+
+```bash
+npx skills add scattercode/scatterskills@v1.0.0
+```
+
+Then `npx skills update` to refresh, and `npx skills remove <name>` to drop one.
+
+### As a Claude Code plugin marketplace
+
+```
+/plugin marketplace add scattercode/scatterskills
+/plugin install scatterskills@scatterskills
+```
+
+`/plugin marketplace update` refreshes the catalogue.
+
+### With `install.sh` (no npm required)
+
+Clone and run the script. Useful without Node, or when you want the installed
+skills symlinked to a working copy you are editing.
 
 ```bash
 git clone https://github.com/scattercode/scatterskills.git
 cd scatterskills
-./install.sh
+./install.sh                                            # everything
+./install.sh manuscript-copyeditor                      # one skill
+./install.sh --project /path/to/project due-diligence-reviewer
+./install.sh --uninstall manuscript-copyeditor
 ```
 
-**Install one skill:**
+It symlinks by default, so `git pull` here updates what is installed. Pass
+`--copy` for independent copies. `--help` lists every option and `--dry-run`
+shows what would happen without touching anything.
+
+### By hand
+
+Nothing magic happens in any of the above — a skill is just a directory:
 
 ```bash
-./install.sh due-diligence-review
-```
-
-**Install into a specific project instead of your home directory:**
-
-```bash
-./install.sh --project /path/to/project due-diligence-review
-```
-
-By default `install.sh` creates symlinks, so pulling updates in this
-repository updates the installed skills. Pass `--copy` for independent copies
-that will not change under you.
-
-**Uninstall:**
-
-```bash
-./install.sh --uninstall due-diligence-review
-```
-
-Run `./install.sh --help` for the full set of options, and `--dry-run` to see
-what would happen without touching anything.
-
-### Installing by hand
-
-Nothing magic happens in the script — a skill is just a directory:
-
-```bash
-ln -s "$PWD/due-diligence-review" ~/.claude/skills/due-diligence-review
+ln -s "$PWD/skills/due-diligence-reviewer" ~/.claude/skills/due-diligence-reviewer
 ```
 
 ## Using a skill
@@ -80,7 +94,7 @@ Once installed, describe your task normally:
 > Can you review whether this vendor's tool would survive a security review at
 > a bank? The repo is in `~/dev/some-vendor-tool`.
 
-Claude picks up `due-diligence-review` from the description and follows it.
+Claude picks up `due-diligence-reviewer` from the description and follows it.
 You can also name it directly if you want to be sure.
 
 To check what is installed:

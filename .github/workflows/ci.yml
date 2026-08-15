@@ -1,0 +1,85 @@
+# Checks that guard the things which actually break distribution.
+#
+# Deliberately not a generic markdown linter: the failure modes that matter
+# here are a skill whose `name` does not match its directory (agents silently
+# fail to load it), a malformed plugin manifest (the marketplace route breaks),
+# and a shell incompatibility in install.sh (`mapfile` is bash 4+, and macOS
+# ships 3.2 — that bug shipped once already).
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: install.sh syntax
+        run: bash -n install.sh
+
+      - name: install.sh discovers every skill
+        run: |
+          set -euo pipefail
+          found="$(./install.sh --list | sed -n '/^Available/,/^$/p' | grep -c '^  ' || true)"
+          expected="$(find skills -mindepth 2 -maxdepth 2 -name SKILL.md | wc -l | tr -d ' ')"
+          echo "discovered=$found expected=$expected"
+          [ "$found" -eq "$expected" ] || {
+            echo "::error::install.sh found $found skills but $expected exist"; exit 1; }
+
+      - name: Plugin manifests are valid JSON
+        run: |
+          set -euo pipefail
+          for f in .claude-plugin/*.json; do
+            python3 -c "import json,sys; json.load(open('$f'))"
+            echo "ok: $f"
+          done
+
+      - name: Skill frontmatter is valid
+        run: |
+          set -euo pipefail
+          status=0
+          for d in skills/*/; do
+            name_dir="$(basename "$d")"
+            f="${d}SKILL.md"
+            if [ ! -f "$f" ]; then
+              echo "::error::$d has no SKILL.md"; status=1; continue
+            fi
+            name="$(awk '/^---$/{c++; next} c==1 && /^name:/{sub(/^name:[[:space:]]*/,""); print; exit}' "$f")"
+            desc="$(awk '/^---$/{c++; next} c==1 && /^description:/{print "yes"; exit}' "$f")"
+
+            # The spec requires name to equal the parent directory name; when
+            # they diverge the skill loads under a name nobody expects, or not
+            # at all.
+            [ "$name" = "$name_dir" ] || {
+              echo "::error::$f name '$name' != directory '$name_dir'"; status=1; }
+            [ -n "$desc" ] || {
+              echo "::error::$f has no description"; status=1; }
+
+            # Spec: 1-64 chars, lowercase alphanumerics and hyphens, no leading,
+            # trailing or consecutive hyphens.
+            echo "$name" | grep -Eq '^[a-z0-9]+(-[a-z0-9]+)*$' || {
+              echo "::error::$f name '$name' is not lowercase-hyphenated"; status=1; }
+            [ "${#name}" -le 64 ] || {
+              echo "::error::$f name exceeds 64 characters"; status=1; }
+
+            echo "ok: $name_dir"
+          done
+          exit $status
+
+      - name: Every skill appears in the README catalogue
+        run: |
+          set -euo pipefail
+          status=0
+          for d in skills/*/; do
+            name="$(basename "$d")"
+            grep -q "$name" README.md || {
+              echo "::error::$name is not listed in README.md"; status=1; }
+          done
+          exit $status
