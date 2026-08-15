@@ -4,10 +4,14 @@ Guidance for Claude Code when working in this repository.
 
 ## What this project is
 
-**scatterskills** is Stephen Masters' personal library of
+**scatterskills** is a shared library of
 [Agent Skills](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview)
-for Claude — reusable procedures for work done often enough that the approach
+for Claude — reusable procedures for work we do often enough that the approach
 is worth writing down.
+
+It is a collaborative project. Write documentation and commit messages in the
+first person plural, and assume more than one person will read, edit and rely
+on anything added here.
 
 The library exists so that a method can be *improved over time*. A skill
 written after doing something once is a draft; its value comes from being

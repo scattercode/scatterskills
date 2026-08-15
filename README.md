@@ -1,7 +1,7 @@
 # scatterskills
 
 A personal library of [Agent Skills](https://docs.claude.com/en/docs/agents-and-tools/agent-skills/overview)
-for Claude — reusable procedures for work I do often enough that the approach
+for Claude — reusable procedures for work we do often enough that the approach
 is worth writing down.
 
 Each skill captures a method: what to do, in what order, and *why* each step
