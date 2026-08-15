@@ -24,6 +24,7 @@ and if a skill fits, it is used. You can also ask for one by name.
 
 | Skill | What it does |
 |---|---|
+| [`copyeditor`](copyeditor/) | Copy-edits book manuscripts and long-form prose, producing a self-contained HTML annotation report. Applies Hart's Rules or the Chicago Manual of Style depending on the target variety, with a dedicated pass for OCR artefacts in scanned text. Annotates rather than rewrites, so an editor decides what to accept |
 | [`due-diligence-review`](due-diligence-review/) | Produces an evidence-based due diligence review of a software product from the perspective of a reviewer at a regulated institution — bank, fund, insurer, energy, government. Use it to assess inbound software, or to give a vendor a friendly pre-review before a real one happens |
 
 ## Installing
