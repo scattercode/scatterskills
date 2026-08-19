@@ -7,7 +7,7 @@
     {
       "name": "scatterskills",
       "source": "./",
-      "description": "Reusable agent skills: manuscript copy-editing and regulated-industry due diligence review"
+      "description": "Reusable agent skills: backlog refinement, manuscript copy-editing and regulated-industry due diligence review"
     }
   ]
 }

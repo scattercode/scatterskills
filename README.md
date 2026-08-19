@@ -26,6 +26,7 @@ and if a skill fits, it is used. You can also ask for one by name.
 |---|---|
 | [`manuscript-copyeditor`](skills/manuscript-copyeditor/) | Copy-edits book manuscripts and long-form prose, producing a self-contained HTML annotation report. Applies Hart's Rules or the Chicago Manual of Style depending on the target variety, with a dedicated pass for OCR artefacts in scanned text. Annotates rather than rewrites, so an editor decides what to accept |
 | [`due-diligence-reviewer`](skills/due-diligence-reviewer/) | Produces an evidence-based due diligence review of a software product from the perspective of a reviewer at a regulated institution — bank, fund, insurer, energy, government. Use it to assess inbound software, or to give a vendor a friendly pre-review before a real one happens |
+| [`backlog-refiner`](skills/backlog-refiner/) | Writes and refines backlog items — epics, stories, spikes, tasks and bugs — and breaks a design, ADR or analysis into deliverable work. Covers choosing an issue type, acceptance criteria somebody else can check, INVEST, splitting an item that is too large, dependency link semantics, what belongs in a definition of done, and how an item travels from the board to a review |
 
 ## Installing
 
